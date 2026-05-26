@@ -1,0 +1,160 @@
+Loading: ../gsm8k_qwen9b.final.csv
+
+============================================================================
+  Single-File Multi-Window Analysis — Model
+============================================================================
+  File: ../gsm8k_qwen9b.final.csv
+  Windows: [128, 256, 400, 512, 1024, 2048]
+  Bootstrap iterations: 10000
+  Mode: PREFINAL (recommended)
+  CIs: standard i.i.d. bootstrap
+
+  [Prefinal mode] Restricted to 1142 prefinal-valid rows (12 failures, 1.1% failure rate)
+  Early features = tokens 0→T of prefinal trace
+  Full  features = all tokens up to Final Answer cutoff
+
+
+============================================================================
+  SECTION 1 — Dataset Overview  [Model]
+============================================================================
+
+  n=1142  failures=12 (1.1%)  accuracy=98.9%
+  mean_gen_len=2468  prefinal_valid=1142/1142 (100.0%)
+
+  Windows detected: [128, 256, 400, 512, 1024, 2048]
+  Full-trace columns available: 11
+
+  Window       Cols available    Mean window len
+  ────────────────────────────────────────────────
+  T=128                    11                128
+  T=256                    11                231
+  T=400                    11                281
+  T=512                    11                291
+  T=1024                   11                294
+  T=2048                   11                294
+
+============================================================================
+  SECTION 2 — Window Ablation: Early vs Full-Trace PR-AUC
+============================================================================
+
+  Baseline PR-AUC (random): 0.0105
+  Full-trace PR-AUC: 0.0141  95% CI [0.0055, 0.0556]  AUROC=0.4573
+
+
+────────────────────────────────────────────────────────────────────────────
+  2a. Early-Window PR-AUC Table
+────────────────────────────────────────────────────────────────────────────
+  Window     Early PR-AUC                 95% CI   Early AUROC   Full PR-AUC
+  ──────────────────────────────────────────────────────────────────────────
+  T=128            0.0147       [0.0067, 0.0339]        0.5382        0.0141
+  T=256            0.0084       [0.0044, 0.0187]        0.3333        0.0141
+  T=400            0.0112       [0.0057, 0.0248]        0.4855        0.0141
+  T=512            0.0113       [0.0054, 0.0303]        0.4458        0.0141
+  T=1024           0.0141       [0.0055, 0.0556]        0.4573        0.0141
+  T=2048           0.0141       [0.0055, 0.0556]        0.4573        0.0141
+
+────────────────────────────────────────────────────────────────────────────
+  2b. Delta PR-AUC (Early − Full) with Bootstrap 95% CI
+────────────────────────────────────────────────────────────────────────────
+
+  Full-trace OOF scores computed from 1142 samples
+
+  Window      ΔPR-AUC                   95% CI    p(early>full)            Verdict
+  ──────────────────────────────────────────────────────────────────────────────────
+  T=128       -0.0013       [-0.0412, +0.0200]            0.568        ? Ambiguous
+  T=256       -0.0089       [-0.0456, +0.0057]            0.165        ? Ambiguous
+  T=400       -0.0056       [-0.0362, +0.0066]            0.298        ? Ambiguous
+  T=512       -0.0049       [-0.0266, +0.0006]            0.174        ? Ambiguous
+  T=1024      +0.0000       [+0.0000, +0.0000]            0.000        ? Ambiguous
+  T=2048      +0.0000       [+0.0000, +0.0000]            0.000        ? Ambiguous
+
+  → Best early window: T=128  (Early PR-AUC=0.0147)
+  → Persistent uncertainty — full trace dominates across all windows
+
+============================================================================
+  SECTION 3 — Length Confound Reference  [Raw full-trace vs Prefinal-early]
+============================================================================
+
+  NOTE: In --prefinal mode, Sections 2/4/5 already use the correct
+  prefinal-vs-prefinal comparison. This section shows the raw full-trace
+  PR-AUC for reference only (demonstrates the length confound).
+
+  Raw full-trace PR-AUC (all rows): 0.5749  [0.5030, 0.6555]
+  generated_len PR-AUC (length confound proxy): 0.9519  [0.9238, 0.9760]
+
+============================================================================
+  SECTION 4 — Per-Feature Breakdown (Mean vs Max, Individual Features)
+============================================================================
+
+  Individual feature PR-AUC (CV-LR, single feature at a time)
+
+  Feature                      Full     T=128     T=256     T=400     T=512    T=1024    T=2048
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  entropy_max                0.0894    0.0110    0.0236    0.0352    0.0838    0.0894    0.0894
+  entropy_mean               0.0388    0.0107    0.0149    0.0298    0.0384    0.0388    0.0388
+  fork_rate                  0.0210    0.0144    0.0085    0.0089    0.0214    0.0210    0.0210
+  margin_max                 0.0104    0.0136    0.0190    0.0186    0.0104    0.0104    0.0104
+  margin_mean                0.0338    0.0151    0.0110    0.0243    0.0334    0.0338    0.0338
+  near_tie_max               0.0084    0.0135    0.0097    0.0084    0.0084    0.0084    0.0084
+  near_tie_mean              0.0219    0.0145    0.0099    0.0091    0.0222    0.0219    0.0219
+  nll_max                    0.0148    0.0117    0.0089    0.0148    0.0149    0.0148    0.0148
+  nll_mean                   0.0351    0.0087    0.0130    0.0245    0.0347    0.0351    0.0351
+  nucleus_size_max           0.1294    0.0141    0.0207    0.0298    0.1210    0.1294    0.1294
+  nucleus_size_mean          0.0434    0.0107    0.0163    0.0286    0.0421    0.0434    0.0434
+
+────────────────────────────────────────────────────────────────────────────
+  4b. Inverted-U Signature per Feature
+────────────────────────────────────────────────────────────────────────────
+
+  Feature                      Best T    Best PA    Full PA            Shape
+  ──────────────────────────────────────────────────────────────────────────
+  entropy_max                    1024     0.0894     0.0894     Inverted-U ✓
+  entropy_mean                   1024     0.0388     0.0388     Inverted-U ✓
+  fork_rate                       512     0.0214     0.0210     Early>Full ✓
+  margin_max                      256     0.0190     0.0104     Early>Full ✓
+  margin_mean                    1024     0.0338     0.0338     Inverted-U ✓
+  near_tie_max                    128     0.0135     0.0084     Early>Full ✓
+  near_tie_mean                   512     0.0222     0.0219     Early>Full ✓
+  nll_max                         512     0.0149     0.0148     Early>Full ✓
+  nll_mean                       1024     0.0351     0.0351     Inverted-U ✓
+  nucleus_size_max               1024     0.1294     0.1294     Inverted-U ✓
+  nucleus_size_mean              1024     0.0434     0.0434     Inverted-U ✓
+
+────────────────────────────────────────────────────────────────────────────
+  4c. Aggregate: Max Features vs Mean Features
+────────────────────────────────────────────────────────────────────────────
+
+           Max (full)   Mean (full)                 T=128                 T=256                 T=400                 T=512                T=1024                T=2048
+                                               max / mean            max / mean            max / mean            max / mean            max / mean            max / mean
+  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+               0.0224        0.0260         0.0129/0.0155         0.0184/0.0140         0.0192/0.0217         0.0158/0.0245         0.0224/0.0260         0.0224/0.0260
+
+============================================================================
+  SECTION 5 — Summary and Commitment-Point Verdict
+============================================================================
+
+  Model: Model
+  N=1142  failures=12 (1.1%)  accuracy=98.9%
+  Full-trace PR-AUC: 0.0141
+
+  Window     Early PA    Full PA    Delta                 95% CI   p(E>F)            Verdict
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  T=128        0.0147     0.0141  -0.0013     [-0.0412, +0.0200]    0.568        ? Ambiguous
+  T=256        0.0084     0.0141  -0.0089     [-0.0456, +0.0057]    0.165        ? Ambiguous
+  T=400        0.0112     0.0141  -0.0056     [-0.0362, +0.0066]    0.298        ? Ambiguous
+  T=512        0.0113     0.0141  -0.0049     [-0.0266, +0.0006]    0.174        ? Ambiguous
+  T=1024       0.0141     0.0141  +0.0000     [+0.0000, +0.0000]    0.000        ? Ambiguous
+  T=2048       0.0141     0.0141  +0.0000     [+0.0000, +0.0000]    0.000        ? Ambiguous
+
+  ┌─ VERDICT: TYPE 2 — PERSISTENT UNCERTAINTY
+  │  Full-trace always statistically better than early window.
+  └─ Uncertainty accumulates throughout the reasoning trace.
+
+  Plot saved (prefinal):
+    PDF → gsm8k_qwen9b_prefinal_ablation.pdf
+    PNG → gsm8k_qwen9b_prefinal_ablation.png
+
+============================================================================
+  Analysis complete.
+============================================================================
+

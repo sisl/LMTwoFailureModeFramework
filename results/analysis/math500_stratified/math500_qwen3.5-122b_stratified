@@ -1,0 +1,48 @@
+Level 1-2 (easy): n=124, failures=16 (12.9%)
+    z-score at T=400: +1.500  CI=[+0.0061,+0.1566]  → Strong committed
+    T* (CV-LR): 400  |  T* (bootstrap mean): 262 ± 101
+
+  Level 3: n=96, failures=13 (13.5%)
+    z-score at T=400: +1.016  CI=[-0.0342,+0.2135]  → Weak committed
+    T* (CV-LR): 400  |  T* (bootstrap mean): 506 ± 363
+
+  Level 4: n=119, failures=22 (18.5%)
+    z-score at T=400: -0.394  CI=[-0.2021,+0.1269]  → Persistent
+    T* (CV-LR): 1024  |  T* (bootstrap mean): 489 ± 569
+
+  Level 5: n=112, failures=24 (21.4%)
+    z-score at T=400: +1.415  CI=[-0.0226,+0.1597]  → Weak committed
+    T* (CV-LR): 400  |  T* (bootstrap mean): 583 ± 504
+
+
+──────────────────────────────────────────────────────────────────────
+  Regression 1: z-score (commitment strength) ~ difficulty_level
+  Dataset: MATH-500 / Gemma4-31B
+──────────────────────────────────────────────────────────────────────
+  Slope (β₁):     -0.1706  (SE=0.3979)
+  Intercept (β₀): +1.4601
+  R²:             0.0842
+  p-value:        0.7098  (not significant at α=0.05)
+
+  Interpretation: per unit increase in difficulty, commitment
+  strength changes by -0.1706 z-units.
+  → Negative trend consistent with hypothesis (not significant, n=4 strata).
+
+──────────────────────────────────────────────────────────────────────
+  Regression 2: T* (commitment location) ~ difficulty_level
+  Dataset: MATH-500 / Gemma4-31B
+──────────────────────────────────────────────────────────────────────
+  Slope (β₁):     +85.4793 tokens/level  (SE=25.1185)
+  Intercept (β₀): +171.4602
+  R²:             0.8527
+  p-value:        0.0766  (not significant at α=0.05)
+
+  Per-stratum T* (bootstrap mean ± std):
+    Level 1-2 (easy): T*=262 ± 101  (CV-LR: 400)
+    Level 3: T*=506 ± 363  (CV-LR: 400)
+    Level 4: T*=489 ± 569  (CV-LR: 1024)
+    Level 5: T*=583 ± 504  (CV-LR: 400)
+
+  Interpretation: per unit increase in difficulty, commitment
+  point shifts by +85.5 tokens.
+  → Positive trend consistent with hypothesis (not significant, n=4 strata).

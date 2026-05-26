@@ -1,0 +1,186 @@
+Loading: gpqa_qwen3.5-9b_sc15.final.xlsx
+Aggregating to question level (single completion per question)...
+
+Questions:      193
+SC correct:     169 (87.6%)
+SC incorrect:   24 (12.4%)
+Early window:   T=2048
+
+======================================================================
+ANALYSIS 1: DIRECT AGREEMENT WITH SC VERDICT
+======================================================================
+
+Optimal threshold (max kappa=0.1639):
+  Threshold:        -0.5035
+  Questions flagged:50.3% as uncertain
+  Accuracy vs SC:   0.5803
+  Cohen's kappa:    0.1639
+  False alarm rate: 0.4556 (SC correct but we said wrong)
+  Missed failures:  0.1667 (SC wrong but we said correct)
+
+  Baseline accuracy (always predict SC correct): 0.8756
+  Lift over baseline: -0.2953
+
+  Confusion matrix at optimal threshold:
+                       Pred: SC wrong  Pred: SC correct
+  SC wrong (failure)              20               4
+  SC correct                      76              93
+
+  Threshold sweep (sorted by kappa):
+   threshold  %flagged  accuracy    kappa  false_alarm  missed_fail
+     -0.5035     50.3%    0.5803   0.1639       0.4556       0.1667
+     -0.4762     45.1%    0.6114   0.1607       0.4083       0.2500
+     -0.5362     54.9%    0.5440   0.1509       0.5030       0.1250
+     -0.4503     39.9%    0.6321   0.1326       0.3669       0.3750
+     -0.3044     25.4%    0.7254   0.1285       0.2308       0.5833
+     -0.4047     35.2%    0.6580   0.1210       0.3254       0.4583
+     -0.5882     60.1%    0.4922   0.1183       0.5621       0.1250
+     -0.6161     64.8%    0.4560   0.1095       0.6095       0.0833
+     -0.2077     15.0%    0.7876   0.1046       0.1361       0.7500
+     -0.6489     69.9%    0.4041   0.0831       0.6686       0.0833
+
+  Plot saved: ./sc_replication_agreement_w2048.png
+
+======================================================================
+ANALYSIS 2: SC VERDICT PREDICTION vs TRUE LABEL PREDICTION
+======================================================================
+
+  Predicting SC's verdict (majority_correct==0):
+    PR-AUC=0.2892  AUROC=0.6793  Baseline=0.1244  Lift=+0.1648
+
+  Predicting true failure (correct==0 on single completion):
+    PR-AUC=0.3405  AUROC=0.7128  Baseline=0.1503  Lift=+0.1902
+
+  Gap (SC target - true target): -0.0513 PR-AUC
+  Interpretation: uncertainty features predict single-completion
+  correctness better than SC's verdict. SC captures something that
+  single-completion uncertainty doesn't fully see.
+
+  p_correct as predictor of SC verdict (oracle upper bound):
+    PR-AUC=0.9360  AUROC=0.9827
+  Your uncertainty features capture 20.3% of the oracle lift.
+
+======================================================================
+ANALYSIS 3: SELECTIVE SC — TRIAGE OPERATING CURVE
+(Three signal conditions compared)
+======================================================================
+
+  Total questions: 193
+  SC failures:     24 (12.4%)
+
+  ── Full trace (no prefinal strip) (193 NaN) ──
+    skip 20%: save 20% SC calls, recall=0.750, precision=0.842, missed=6.0
+    skip 30%: save 30% SC calls, recall=0.708, precision=0.877, missed=7.0
+    skip 45%: save 45% SC calls, recall=0.625, precision=0.895, missed=9.0
+    skip 50%: save 50% SC calls, recall=0.542, precision=0.885, missed=11.0
+    To catch ≥90% failures: skip 10.0%, save 10.0% SC calls, missed=1.0
+
+  ── Prefinal full trace (0 NaN) ──
+    skip 20%: save 20% SC calls, recall=1.000, precision=1.000, missed=0.0
+    skip 30%: save 30% SC calls, recall=0.917, precision=0.965, missed=2.0
+    skip 45%: save 45% SC calls, recall=0.875, precision=0.965, missed=3.0
+    skip 50%: save 50% SC calls, recall=0.833, precision=0.958, missed=4.0
+    To catch ≥90% failures: skip 35.0%, save 35.0% SC calls, missed=2.0
+
+  ── Prefinal early window (T=2048) (0 NaN) ──
+    skip 20%: save 20% SC calls, recall=1.000, precision=1.000, missed=0.0
+    skip 30%: save 30% SC calls, recall=0.917, precision=0.965, missed=2.0
+    skip 45%: save 45% SC calls, recall=0.875, precision=0.965, missed=3.0
+    skip 50%: save 50% SC calls, recall=0.833, precision=0.958, missed=4.0
+    To catch ≥90% failures: skip 35.0%, save 35.0% SC calls, missed=2.0
+
+  COMPARISON AT KEY OPERATING POINTS
+  signal              skip20_recall  skip30_recall  skip45_recall  skip50_recall
+  --------------------------------------------------------------------
+  Full trace (no prefinal strip)                  0.750          0.708          0.625          0.542
+  Prefinal full trace                             1.000          0.917          0.875          0.833
+  Prefinal early window (T=2048)                  1.000          0.917          0.875          0.833
+
+  Plot saved: ./sc_replication_selective_w2048.png
+
+======================================================================
+ANALYSIS 4: ACCURACY PROXY (when ground truth unavailable)
+======================================================================
+
+  ── 4a: Problem-level accuracy proxy ──
+  Label: model gets this problem wrong more often than not (p_correct<0.5)
+  Baseline PR-AUC:                       0.1865
+  agreement_rate:                        0.8149  lift=+0.6284
+  prefinal uncertainty (full trace):     0.4642  lift=+0.2777
+  prefinal uncertainty (early T=2048):  0.4642  lift=+0.2777
+  >> Agreement rate wins at problem level (gap=-0.3507)
+
+  ── 4b: Completion-level accuracy proxy ──
+  Label: this specific completion is incorrect
+  agreement_rate is IDENTICAL within a question — cannot distinguish
+  between completions of the same question.
+  Baseline PR-AUC:                           0.1228
+  agreement_rate (problem-level):            0.3902  lift=+0.2674
+  single-completion prefinal (full):         0.2781  lift=+0.1553
+  single-completion prefinal (early T=2048): 0.2781  lift=+0.1553
+
+  Gap (uncertainty - agreement_rate): -0.1121 PR-AUC
+  >> Agreement_rate outperforms single-completion uncertainty.
+     Problem-level difficulty dominates within-completion signal.
+
+  ── 4c: Equal-compute comparison (k=15 uncertainty vs k=15 SC) ──
+  Label: model gets this problem wrong more often than not (p_correct<0.5)
+  Both signals use ALL 193 questions × 15 completions.
+  This isolates signal quality from compute cost.
+  Baseline PR-AUC:                             0.1865
+  agreement_rate (k=15):                       0.8149  lift=+0.6284
+  mean prefinal uncertainty (k=15, full):      0.4642  lift=+0.2777
+  mean prefinal uncertainty (k=15, T=2048):   0.4642  lift=+0.2777
+
+  Gap (k=15 uncertainty - k=15 agreement_rate): -0.3507 PR-AUC
+  >> At equal compute (k=15), agreement rate is a BETTER accuracy
+     proxy than aggregated uncertainty. SC is the right tool here —
+     uncertainty's value is compute efficiency (fewer completions),
+     not signal quality at the same budget.
+
+  ── 4d: Combined signal (prefinal uncertainty + agreement rate, k=15) ──
+  Tests whether the two signals are complementary on this dataset.
+  Label: model gets this problem wrong more often than not (p_correct<0.5)
+  Baseline PR-AUC:                                0.1865
+  agreement_rate alone (k=15):                    0.8149  lift=+0.6284
+  uncertainty alone (k=15, full trace):           0.4642  lift=+0.2777
+  COMBINED (uncertainty full + agreement, k=15):  0.8501  lift=+0.6635
+  COMBINED (uncertainty early + agreement, k=15): 0.8501  lift=+0.6635
+
+  Combined lift over agreement_rate alone: +0.0351
+  Combined lift over uncertainty alone:    +0.3859
+  >> COMPLEMENTARY: both signals add genuine information.
+     Uncertainty captures within-completion commitment;
+     agreement rate captures between-completion variability.
+
+  Plot saved: ./gpqa_sc_accuracy_proxy_w2048.png
+
+======================================================================
+SUMMARY — THREE ANALYSES
+======================================================================
+
+  SC baseline: 87.6% of questions correct by majority vote
+  SC failures: 24 questions (12.4%)
+
+  1. DIRECT AGREEMENT
+     At optimal threshold, single-completion uncertainty agrees with
+     SC's verdict on 58.0% of questions
+     (kappa=0.164, baseline=87.6%).
+     Flagging 50% of questions as uncertain
+     gives the best agreement with SC.
+
+  2. SC VERDICT PREDICTION
+     Predicting SC's verdict:   PR-AUC=0.2892
+     Predicting true failure:   PR-AUC=0.3405
+     Uncertainty features predict SC's verdict at least as well as
+     they predict true single-completion failure.
+
+  3. SELECTIVE SC TRIAGE
+     Skip SC on the 50% most confident questions:
+       95.8% of skipped questions SC gets right anyway
+       83.3% of SC failures still caught
+     Skip SC on the 30% most confident questions:
+       96.5% of skipped questions SC gets right
+       91.7% of SC failures still caught
+
+Tables saved.
