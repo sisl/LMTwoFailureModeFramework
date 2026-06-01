@@ -1,0 +1,21 @@
+# Requirements for:
+#   analyze_updated_dataset_agnostic.py
+#   livebench_async_vllm.py
+#   gpqa_async_vllm.py
+#   math_async_vllm.py
+#   updated_gsm8k_vllm.py
+#
+#
+# SYSTEM DEPENDENCY (not pip-installable):
+# analyze_updated_dataset_agnostic.py sets matplotlib's text.usetex = True with
+# \usepackage{amsmath}, so it requires a working LaTeX install to render plots:
+#   - Debian/Ubuntu: apt install texlive texlive-latex-extra dvipng cm-super
+#   - macOS:         brew install --cask mactex   (or basictex + dvipng)
+# Remove the text.usetex block in that script if you don't want the LaTeX dependency.
+
+pandas
+numpy
+matplotlib
+scikit-learn
+datasets
+openai
