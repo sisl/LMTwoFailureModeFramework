@@ -7,18 +7,20 @@ Code and data for the EMNLP 2025 paper submission "How Language Models Fail: Tok
 We characterize LLM reasoning failures through token-level uncertainty signals extracted from chain-of-thought traces, finding that failures emerge through two empirically distinguishable modes: committed failure, where a model locks onto an incorrect reasoning path early, and persistent uncertainty, where uncertainty accumulates throughout the trace. We identify the commitment point, the position in a reasoning trace beyond which additional tokens hurt rather than help failure detection, and demonstrate direct implications for self-consistency.
 
 ## Repository Structure
-├── <dataset>_async_vllm.py       # Inference pipelines for all model-dataset configurations
-├── analyze_updated_dataset_agnostic.py  # Main analysis script: computes PR-AUC curves,
-│                                 # bootstrap CIs (10,000 samples), and failure mode classification
-├── results/
-│   ├── *.csv / *.xlsx            # Inference outputs: token-level uncertainty features
-│   │                             # and failure labels per configuration
-│   └── analysis/
-│       ├── failure_modes/        # Per-configuration failure mode classification outputs
-│       │   └── *.txt             # Committed/persistent classification with bootstrap
-│       │                         # confidence intervals and ΔPR-AUC statistics
-│       ├── self_consistency/     # Self-consistency triage and complementarity results
-│       └── plots/                # PR-AUC curve plots for all configurations
+```
+├── *.py                                    # Inference pipelines for all model-dataset configurations
+├── analyze_updated_dataset_agnostic.py     # Computes PR-AUC curves, bootstrap CIs (10,000 samples),
+│                                           # and failure mode classification
+└── results/
+    ├── *.csv / *.xlsx                      # Inference outputs: token-level uncertainty features
+    │                                       # and failure labels per configuration
+    └── analysis/
+        ├── failure_modes/                  # Per-configuration failure mode classifications
+        │   └── *.txt                       # Committed/persistent classification with bootstrap
+        │                                   # CIs and ΔPR-AUC statistics
+        ├── self_consistency/               # Self-consistency triage and complementarity results
+        └── plots/                          # PR-AUC curve plots for all configurations
+```
 
 ## Reproducing Results
 
