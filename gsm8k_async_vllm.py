@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-gsm8k_vllm.py  —  GSM8K single-trace window ablation pipeline.
+gsm8k_async_vllm.py  —  GSM8K single-trace window ablation pipeline.
 
 Generates ONE completion per problem and computes uncertainty features at
 each window prefix of that same trace. This is methodologically sounder
