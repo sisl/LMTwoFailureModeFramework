@@ -1,10 +1,10 @@
 # How Language Models Fail: Token-Level Signatures of Committed and Persistent Reasoning Failures
 
-Code and data for the EMNLP 2025 paper submission "How Language Models Fail: Token-Level Signatures of Committed and Persistent Reasoning Failures."
+Code and data for the paper submission "How Language Models Fail: Token-Level Signatures of Committed and Persistent Reasoning Failures."
 
 ## Overview
 
-We characterize LLM reasoning failures through token-level uncertainty signals extracted from chain-of-thought traces, finding that failures emerge through two empirically distinguishable modes: committed failure, where a model locks onto an incorrect reasoning path early, and persistent uncertainty, where uncertainty accumulates throughout the trace. We identify the commitment point, the position in a reasoning trace beyond which additional tokens hurt rather than help failure detection, and demonstrate direct implications for self-consistency.
+Failures in language model reasoning emerge through distinct patterns that leave identifiable signatures in the reasoning trace. We characterize these failures using token-level uncertainty signals, finding they arise through two empirically distinguishable modes. We denote the first failure type as "committed failure", in which an early prefix of the reasoning trace is most predictive of eventual failure. A central diagnostic signature is the commitment point, beyond which considering additional tokens hurts failure detection. The second is persistent uncertainty, where the full trace rather than any early prefix is most predictive of failure. We separate these two modes across 16 model-dataset configurations spanning five model families and four reasoning domains with a pre-specified, selection-free statistic (Mann-Whitney p = 0.021), and show that answer-scoring errors can manufacture apparent early-commitment signals that disappear under correct scoring. Since these signatures identify how a model is failing, they show which failure detection strategy can be applied. On GPQA, single-completion confidence identifies inputs on which self-consistency can be skipped in the committed regime; on MATH-500 it cannot, and cross-completion agreement is the stronger signal. These results offer a foundation for understanding when LLM reasoning failures become detectable and for adapting detection strategies accordingly.
 
 ## Repository Structure
 ```
